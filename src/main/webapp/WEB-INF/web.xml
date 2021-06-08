@@ -17,6 +17,7 @@
         <url-pattern>/users</url-pattern>
     </servlet-mapping>
 
+    <!--for first stage of HW1 -->
     <servlet>
         <servlet-name>mealServlet</servlet-name>
         <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
@@ -27,5 +28,18 @@
         <servlet-name>mealServlet</servlet-name>
         <url-pattern>/meals</url-pattern>
     </servlet-mapping>
+
+    <!--for optional stage of HW1 -->
+    <servlet>
+        <servlet-name>MealController</servlet-name>
+        <servlet-class>ru.javawebinar.topjava.web.MealController</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MealController</servlet-name>
+        <url-pattern>/mealscrud</url-pattern>
+    </servlet-mapping>
+
 
 </web-app>
