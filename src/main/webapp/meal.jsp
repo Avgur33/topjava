@@ -43,8 +43,9 @@
     </table>
     <input type="submit" value="Save"/> <input type="reset" value="Cancel"/>
 </form>
+<br>
+<input type="text" id="datetimepicker"/>
 <script>
-
     $(function () {
         $('#datetimepicker').datetimepicker({
             format: 'd.m.Y H:i'

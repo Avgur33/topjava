@@ -19,7 +19,7 @@
         <c:forEach var="a" items="${requestScope.meals}">
                <c:choose>
                 <c:when test="${a.excess}">
-                   <tr style="color:red;">
+                   <tr style="color:red;" id="${a.id}">
                        <td>${a.dateTime.toLocalDate()} ${a.dateTime.toLocalTime()}</td>
                        <td>${a.description}</td>
                        <td>${a.calories}</td>

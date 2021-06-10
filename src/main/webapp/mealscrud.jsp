@@ -13,7 +13,7 @@
 <h3><a href="meals">Meals</a></h3>
 <hr>
 <h2>Meals</h2>
-<p><a href="mealscrud">Add Meal</a></p>
+<p><a href="mealscrud?action=create">Add Meal</a></p>
 <table>
     <thead>
     <tr>

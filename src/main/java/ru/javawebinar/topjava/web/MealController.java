@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.repository.MealsRepository;
 import ru.javawebinar.topjava.repository.MealsRepositoryImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -23,9 +21,6 @@ public class MealController extends HttpServlet {
     private final Logger log;
     private final Integer caloriesPerDay;
     private final MealsRepository mealsRepository;
-
-    private static String INSERT_OR_UPDATE = "/meal.jsp";
-    private static String LIST_MEAL = "/mealscrud.jsp";
 
     public MealController() {
         super();
@@ -43,31 +38,33 @@ public class MealController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String forward;
+
         String action = request.getParameter("action");
         action = action != null? action: "default";
+
+        String LIST_MEAL = "/mealscrud.jsp";
+        String INSERT_OR_UPDATE = "/meal.jsp";
         switch (action.toLowerCase()) {
             case ("delete"):
                 int mealId = Integer.parseInt(request.getParameter("mealId"));
                 mealsRepository.deleteMeal(mealId);
-                forward = LIST_MEAL;
                 request.setAttribute("meals", MealsUtil.filteredByStreams(mealsRepository.getAllMeals(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
+                request.getRequestDispatcher(LIST_MEAL).forward(request, response);
                 break;
-            case ("listmeal"):
-                forward = LIST_MEAL;
-                request.setAttribute("meals", MealsUtil.filteredByStreams(mealsRepository.getAllMeals(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
+            case ("create"):
+                response.sendRedirect("meal.jsp");
+                //request.getRequestDispatcher(INSERT_OR_UPDATE).forward(request, response);
                 break;
             case ("update"):
-                forward = INSERT_OR_UPDATE;
                 Meal meal = mealsRepository.getMealById(Integer.parseInt(request.getParameter("mealId")));
                 request.setAttribute("meal", meal);
+                request.getRequestDispatcher(INSERT_OR_UPDATE).forward(request, response);
                 break;
             default:
-                forward = INSERT_OR_UPDATE;
+                request.setAttribute("meals", MealsUtil.filteredByStreams(mealsRepository.getAllMeals(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
+                request.getRequestDispatcher(LIST_MEAL).forward(request, response);
                 break;
         }
-        RequestDispatcher view = request.getRequestDispatcher(forward);
-        view.forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -85,10 +82,6 @@ public class MealController extends HttpServlet {
         }catch(NumberFormatException numberFormatException){
             mealsRepository.addMeal(meal);
         }
-
-        RequestDispatcher view = request.getRequestDispatcher(LIST_MEAL);
-
-        request.setAttribute("meals", MealsUtil.filteredByStreams(mealsRepository.getAllMeals(), LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
-        view.forward(request, response);
+        response.sendRedirect("mealscrud");
     }
 }
