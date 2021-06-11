@@ -48,6 +48,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
+        //Todo atomic interesting
         if (repository.values().isEmpty())
         {
             return Collections.emptyList();
@@ -58,6 +59,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
+        //Todo atomic interesting
         if (repository.values().isEmpty()) {
             return null;
         }
