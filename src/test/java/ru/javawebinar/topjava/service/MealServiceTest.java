@@ -66,6 +66,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+
         MATCHER.assertMatch(actual, adminMeal1);
     }
 
