@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.javawebinar.topjava.MatcherFactory;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -67,7 +68,7 @@ public class MealServiceTest {
     public void get() {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
 
-        MATCHER.assertMatch(actual, adminMeal1);
+        MatcherFactory.usingIgnoringFieldsComparator("user").assertMatch(actual, adminMeal1);
     }
 
     @Test

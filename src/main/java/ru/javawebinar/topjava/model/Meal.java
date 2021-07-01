@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NamedQueries({
-        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:id"),
-        //@NamedQuery(name = Meal.BY_ID, query = "SELECT m FROM Meal m LEFT JOIN FETCH u.roles WHERE u.email=?1"),
-        //@NamedQuery(name = Meal.ALL_SORTED, query = "SELECT u FROM User u LEFT JOIN FETCH u.roles ORDER BY u.name, u.email"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:user_id"),
+        @NamedQuery(name = Meal.ALL_BETWEEN, query = "SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.user.id=:user_id AND m.dateTime>:start_date AND m.dateTime<:stop_date ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.user.id=:user_id ORDER BY m.dateTime DESC"),
 })
 
 @Entity
@@ -22,7 +22,7 @@ import java.time.LocalTime;
 public class Meal extends AbstractBaseEntity {
 
     public static final String DELETE = "Meal.delete";
-    public static final String BY_ID = "Meal.getById";
+    public static final String ALL_BETWEEN = "Meal.getByDate";
     public static final String ALL_SORTED = "Meal.getAllSorted";
 
 
@@ -41,6 +41,7 @@ public class Meal extends AbstractBaseEntity {
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Meal() {
