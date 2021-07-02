@@ -1,11 +1,14 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import org.junit.rules.TestName;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -34,18 +39,59 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
+    private static final Map<String, Long> methodTime = new HashMap<>();
 
     @Autowired
     private MealService service;
 
-    @Rule
-    public final TestName name = new TestName();
-    //name.getMethodName()
+
+    @ClassRule
+    public static ExternalResource resource = new ExternalResource() {
+        @Override
+        protected void after() {
+            methodTime.forEach((key, value) -> log.info("++++++++++++{} time {}++++++++++++", key, value / 1000000000.0));
+        }
+    };
 
     @Rule
-    public LogTestName logTestName = new LogTestName();
+    public final TestName name = new TestName();
+
+
+
+    @Rule
+    public TestRule logTestName = (base, description) -> new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+            long startTime = System.nanoTime();
+            base.evaluate();
+            long estimatedTime = System.nanoTime() - startTime;
+            methodTime.put(name.getMethodName(), estimatedTime);
+            log.info("++++++++++++{} time {}++++++++++++", name.getMethodName(), estimatedTime / 1000000000.0);
+        }
+    };
+
+/*
+    public class LogTestName implements TestRule {
+        @Override
+        public Statement apply(Statement base, Description description) {
+            return new Statement() {
+
+                @Override
+                public void evaluate() throws Throwable {
+                    long startTime = System.nanoTime();
+                    base.evaluate();
+                    long estimatedTime = System.nanoTime() - startTime;
+                    methodTime.put(name.getMethodName(), estimatedTime);
+                    log.info("++++++++++++{} time {}++++++++++++", name.getMethodName(), estimatedTime / 1000000000.0);
+                }
+            };
+        }
+    }
+*/
+
+
 
     @Test
     public void delete() {
@@ -54,7 +100,8 @@ public class MealServiceTest {
     }
 
     @Test
-    public void deleteNotFound() { assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
+    public void deleteNotFound() {
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
     }
 
     @Test
