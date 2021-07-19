@@ -51,35 +51,33 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         switch (action == null ? "all" : action) {
-            case "delete":
+            case "delete" -> {
                 int id = getId(request);
                 log.info("Delete {}", id);
                 repository.delete(id);
                 response.sendRedirect("meals");
-                break;
-            case "create":
-            case "update":
+            }
+            case "create", "update" -> {
                 final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         repository.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
-                break;
-            case "filter":
+            }
+            case "filter" -> {
                 LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
                 LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
                 LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
                 LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
                 request.setAttribute("meals", mealController.getBetween(startDate, startTime, endDate, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                break;
-            case "all":
-            default:
+            }
+            default -> {
                 log.info("getAll");
                 request.setAttribute("meals",
                         MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                break;
+            }
         }
     }
 
