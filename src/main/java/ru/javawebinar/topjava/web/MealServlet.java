@@ -32,6 +32,7 @@ public class MealServlet extends HttpServlet {
     public void init() {
 
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml","spring/spring-db.xml" );
+
         System.out.println("Bean definition names: ");
         Arrays.stream(appCtx.getBeanDefinitionNames()).forEachOrdered(System.out::println);
         mealController = appCtx.getBean(MealRestController.class);
