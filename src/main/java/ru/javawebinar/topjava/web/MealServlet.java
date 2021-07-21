@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -30,8 +32,15 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init() {
+        //appCtx = new GenericXmlApplicationContext();
+        //appCtx.getEnvironment().setActiveProfiles(Profiles.POSTGRES_DB,Profiles.DATAJPA);
 
-        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml","spring/spring-db.xml" );
+        //appCtx = new ClassPathXmlApplicationContext();
+        //appCtx.getEnvironment().setActiveProfiles(Profiles.POSTGRES_DB,Profiles.DATAJPA);
+
+        appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml","spring/spring-db.xml"}, false);
+        appCtx.getEnvironment().setActiveProfiles(Profiles.POSTGRES_DB,Profiles.DATAJPA);
+        appCtx.refresh();
 
         System.out.println("Bean definition names: ");
         Arrays.stream(appCtx.getBeanDefinitionNames()).forEachOrdered(System.out::println);

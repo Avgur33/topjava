@@ -7,18 +7,15 @@ import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.LocalDate;
-import java.time.Month;
-
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
-public class MealServiceTest extends AbstractBaseServiceTest{
+public abstract class AbstractMealServiceTest extends AbstractBaseServiceTest{
 
     @Autowired
-    private MealService service;
+    protected MealService service;
 
     @Test
     public void delete() {
@@ -88,16 +85,8 @@ public class MealServiceTest extends AbstractBaseServiceTest{
         MATCHER.assertMatch(service.getAll(USER_ID), meals);
     }
 
-    @Test
-    public void getBetweenInclusive() {
-        MATCHER.assertMatch(service.getBetweenInclusive(
-                LocalDate.of(2020, Month.JANUARY, 30),
-                LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
-                meal3, meal2, meal1);
-    }
 
-    @Test
-    public void getBetweenWithNullDates() {
-        MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
-    }
+    public abstract void getBetweenInclusive();
+
+    public abstract void getBetweenWithNullDates();
 }
