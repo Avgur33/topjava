@@ -58,4 +58,8 @@ public class MealService {
         log.info("create");
         return repository.save(meal, userId);
     }
+
+    public Meal getWithUser(int id, int userId) {
+        return checkNotFoundWithId(repository.getWithUser(id, userId), id);
+    }
 }
