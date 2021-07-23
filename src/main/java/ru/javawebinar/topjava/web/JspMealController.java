@@ -72,56 +72,42 @@ public class JspMealController {
         return "redirect:/meals";
     }
 
-    @PostMapping
-    public String postMeals(Model model,HttpServletRequest request, HttpServletResponse response){
-        String id = request.getParameter("id");
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")));
 
-        int userId = SecurityUtil.authUserId();
 
-        if (meal.isNew()) {
-            checkNew(meal);
-            service.create(meal, userId);
-        } else {
-            assureIdConsistent(meal, meal.getId());
-            service.update(meal, userId);
-        }
-        return "redirect:meals";
+    @GetMapping("/create")
+    public String createMeals(Model model,HttpServletRequest request) {
+        final Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
+        model.addAttribute("meal", meal);
+        return "mealForm";
+    }
+
+    @GetMapping("/update")
+    public String updateMeals(Model model,HttpServletRequest request) {
+        final Meal meal = service.get(getId(request), SecurityUtil.authUserId());
+        model.addAttribute("meal", meal);
+        return "mealForm";
+    }
+    @GetMapping("/delete")
+    public String deleteMeals(Model model,HttpServletRequest request) {
+        service.delete(getId(request), SecurityUtil.authUserId());
+        return "redirect:/meals";
+    }
+
+    @GetMapping("/filter")
+    public String filterMeals(Model model,HttpServletRequest request) {
+        LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
+        LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
+        LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
+        LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
+        List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, SecurityUtil.authUserId());
+        model.addAttribute("meals", MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime));
+        return "meals";
     }
 
     @GetMapping()
     public String getMeals(Model model,HttpServletRequest request){
         int userId = SecurityUtil.authUserId();
-        String action = request.getParameter("action");
-        switch (action == null ? "all" : action) {
-            case "delete" -> {
-                int id = getId(request);
-                service.delete(id, userId);
-                return "redirect:meals";
-            }
-            case "create", "update" -> {
-                final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        service.get(getId(request), userId);
-                model.addAttribute("meal", meal);
-                return "mealForm";
-            }
-            case "filter" -> {
-                LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
-                LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
-                LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
-                LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
-                List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, userId);
-                model.addAttribute("meals", MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime));
-                return "meals";
-            }
-            default -> {
-                model.addAttribute("meals", MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
-                return "meals";
-            }
-        }
+        model.addAttribute("meals", MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
+        return "meals";
     }
 }
