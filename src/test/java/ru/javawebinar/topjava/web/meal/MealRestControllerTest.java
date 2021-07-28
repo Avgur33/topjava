@@ -14,6 +14,8 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 
 import static java.time.LocalDateTime.of;
@@ -38,7 +40,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void get() throws Exception{
+    void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + MEAL1_ID))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -48,22 +50,22 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void delete() throws Exception{
+    void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + MEAL1_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertThrows(NotFoundException.class, () -> mealService.get(MEAL1_ID,SecurityUtil.authUserId()));
+        assertThrows(NotFoundException.class, () -> mealService.get(MEAL1_ID, SecurityUtil.authUserId()));
     }
 
     @Test
-    void update() throws Exception{
+    void update() throws Exception {
         Meal updated = MealTestData.getUpdated();
         perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
-        MATCHER.assertMatch(mealService.get(MEAL1_ID,SecurityUtil.authUserId()), updated);
+        MATCHER.assertMatch(mealService.get(MEAL1_ID, SecurityUtil.authUserId()), updated);
     }
 
     @Test
@@ -78,14 +80,16 @@ class MealRestControllerTest extends AbstractControllerTest {
         int newId = created.id();
         newMeal.setId(newId);
         MATCHER.assertMatch(created, newMeal);
-        MATCHER.assertMatch(mealService.get(newId,SecurityUtil.authUserId()), newMeal);
+        MATCHER.assertMatch(mealService.get(newId, SecurityUtil.authUserId()), newMeal);
     }
 
     @Test
     void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL
-                + "between?startDateTime=" + of(2019, Month.JANUARY, 30, 0, 0)
-                + "&endDateTime="+ of(2021, Month.JANUARY, 31, 23, 59)))
+                + "between?startDate=" + LocalDate.of(2019, Month.JANUARY, 30)
+                + "&endDate=" + LocalDate.of(2021, Month.JANUARY, 30)
+                + "&startTime=" + LocalTime.of(0, 0)
+                + "&endTime=" + LocalTime.of(23, 59)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
