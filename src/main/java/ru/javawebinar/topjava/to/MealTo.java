@@ -1,22 +1,26 @@
 package ru.javawebinar.topjava.to;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class MealTo {
-    private Integer id;
+    private final Integer id;
 
-    private LocalDateTime dateTime;
+    private final LocalDateTime dateTime;
 
-    private String description;
+    private final String description;
 
-    private int calories;
+    private final int calories;
 
-    private boolean excess;
-
-    public MealTo() {
-    }
-
-    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+    private final boolean excess;
+    @JsonCreator
+    public MealTo(@JsonProperty("id")Integer id,
+                  @JsonProperty("dateTime")LocalDateTime dateTime,
+                  @JsonProperty("description")String description,
+                  @JsonProperty("calories")int calories,
+                  @JsonProperty("excess")boolean excess) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
@@ -42,26 +46,6 @@ public class MealTo {
 
     public boolean isExcess() {
         return excess;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCalories(int calories) {
-        this.calories = calories;
-    }
-
-    public void setExcess(boolean excess) {
-        this.excess = excess;
     }
 
     @Override
