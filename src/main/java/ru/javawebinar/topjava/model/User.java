@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Range;
@@ -27,6 +30,9 @@ import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 })
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class User extends AbstractNamedEntity {
 
     public static final String DELETE = "User.delete";
@@ -61,6 +67,7 @@ public class User extends AbstractNamedEntity {
     @BatchSize(size = 200)
     @JoinColumn(name = "user_id") //https://stackoverflow.com/a/62848296/548473
     @OnDelete(action = OnDeleteAction.CASCADE)
+ //   @JsonManagedReference
     private Set<Role> roles;
 
     @Column(name = "calories_per_day", nullable = false, columnDefinition = "int default 2000")

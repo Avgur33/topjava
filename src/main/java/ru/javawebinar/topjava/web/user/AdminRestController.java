@@ -37,6 +37,12 @@ public class AdminRestController extends AbstractUserController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
+
+    @GetMapping("/with-meals/{id}")
+    public User getWithMeals(@PathVariable int id) {
+        return super.getWithMeals(id);
+    }
+
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
