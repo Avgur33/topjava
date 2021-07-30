@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
 
-import static java.time.LocalDateTime.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -87,6 +86,19 @@ class MealRestControllerTest extends AbstractControllerTest {
     void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL
                 + "between?startDate=" + LocalDate.of(2019, Month.JANUARY, 30)
+                + "&endDate=" + LocalDate.of(2021, Month.JANUARY, 30)
+                + "&startTime=" + LocalTime.of(0, 0)
+                + "&endTime=" + LocalTime.of(23, 59)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MATCHERTO.contentJson(MealsUtil.getTos(MealTestData.meals, SecurityUtil.authUserCaloriesPerDay())));
+    }
+
+    @Test
+    void getBetweenFilter() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL
+                + "filter?startDate=" + LocalDate.of(2019, Month.JANUARY, 30)
                 + "&endDate=" + LocalDate.of(2021, Month.JANUARY, 30)
                 + "&startTime=" + LocalTime.of(0, 0)
                 + "&endTime=" + LocalTime.of(23, 59)))
