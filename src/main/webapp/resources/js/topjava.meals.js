@@ -5,6 +5,19 @@ const ctx = {
     ajaxUrl: mealsAjaxUrl
 };
 
+let ffilter;
+
+function mealFilter() {
+    $.ajax({
+        type: "GET",
+        url: ctx.ajaxUrl+"filter",
+        data: ffilter.serialize()
+    }).done(function () {
+        /*$("#editRow").modal("hide");*/
+        updateTable();
+        successNoty("Filtered");
+    });
+}
 // $(document).ready(function () {
 $(function () {
     makeEditable(
