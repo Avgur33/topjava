@@ -14,60 +14,42 @@
         <div class="container">
             <h3 class="text-center"><spring:message code="meal.title"/></h3>
 
-            <form id="filterForm" method="get" action="meals/filter">
-                <div class="form-group">
-                    <label for="startDate" class="col-form-label"><spring:message code="meal.startDate"/></label>
-                    <input type="date" class="form-control" id="startDate" name="startDate"
-                           placeholder="<spring:message code="meal.description"/>">
+            <div class="card border-dark">
+                <div class="card-body pb-0">
+                    <form id="filter">
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="startDate"><spring:message code="meal.startDate"/></label>
+                                <input type="date" class="form-control" name="startDate" id="startDate" autocomplete="off">
+                            </div>
+                            <div class="col-2">
+                                <label for="endDate"><spring:message code="meal.endDate"/></label>
+                                <input type="date" class="form-control" name="endDate" id="endDate" autocomplete="off">
+                            </div>
+                            <div class="offset-2 col-3">
+                                <label for="startTime"><spring:message code="meal.startTime"/></label>
+                                <input type="time" class="form-control" name="startTime" id="startTime" autocomplete="off">
+                            </div>
+                            <div class="col-3">
+                                <label for="endTime"><spring:message code="meal.endTime"/></label>
+                                <input type="time" class="form-control" name="endTime" id="endTime" autocomplete="off">
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="form-group">
-                    <label for="endDate" class="col-form-label"><spring:message code="meal.endDate"/></label>
-                    <input type="date" class="form-control" id="endDate" name="endDate"
-                           placeholder="<spring:message code="meal.endDate"/>">
+                <div class="card-footer text-right">
+                    <button class="btn btn-danger" onclick="clearFilter()">
+                        <span class="fa fa-remove"></span> <spring:message code="common.cancel"/>
+                    </button>
+                    <button class="btn btn-primary" onclick="ctx.updateTable()">
+                        <span class="fa fa-filter"></span><spring:message code="meal.filter"/>
+                    </button>
                 </div>
-
-                <div class="form-group">
-                    <label for="startTime" class="col-form-label"><spring:message code="meal.startTime"/></label>
-                    <input type="time" class="form-control" id="startTime" name="startTime"
-                           placeholder="<spring:message code="meal.startTime"/>">
-                </div>
-                <div class="form-group">
-                    <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/></label>
-                    <input type="time" class="form-control" id="endTime" name="endTime"
-                           placeholder="<spring:message code="meal.endTime"/>">
-                </div>
-                <button type="button" class="btn btn-primary" onclick="mealFilter()"><spring:message code="meal.filter"/></button>
-            </form>
-
-<%--            <form method="get" action="meals/filter">
-                <dl>
-                    <dt><spring:message code="meal.startDate"/>:</dt>
-                    <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
-                </dl>
-                <dl>
-                    <dt><spring:message code="meal.endDate"/>:</dt>
-                    <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
-                </dl>
-                <dl>
-                    <dt><spring:message code="meal.startTime"/>:</dt>
-                    <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
-                </dl>
-                <dl>
-                    <dt><spring:message code="meal.endTime"/>:</dt>
-                    <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
-                </dl>
-                <button type="submit"><spring:message code="meal.filter"/></button>
-            </form>--%>
-            <%--<hr>
-            <a href="meals/create"><spring:message code="meal.add"/></a>
-            <hr>--%>
+            </div>
             <button class="btn btn-primary" onclick="add()">
                 <span class="fa fa-plus"></span>
                 <spring:message code="meal.add"/>
             </button>
-
-
             <table class="table table-striped" id="datatable">
                 <thead>
                 <tr>
@@ -89,8 +71,6 @@
                         </td>
                         <td>${meal.description}</td>
                         <td>${meal.calories}</td>
-                            <%--<td><a href="meals/update?id=${meal.id}"><spring:message code="common.update"/></a></td>
-                            <td><a href="meals/delete?id=${meal.id}"><spring:message code="common.delete"/></a></td>--%>
                         <td><a><span class="fa fa-pencil"></span></a></td>
                         <td><a class="delete"><span class="fa fa-remove"></span></a></td>
                     </tr>

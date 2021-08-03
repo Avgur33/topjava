@@ -2,9 +2,9 @@ let form;
 
 function makeEditable(datatableApi) {
     ctx.datatableApi = datatableApi;
-    form = $('#detailsForm');
-    $(".delete").click(function () {
-        if (confirm('Are you sure?')) {
+    form = $('#detailsForm'); /*переменной form присвоили форму по id detailsForm*/
+    $(".delete").click(function () {  /*на класс delete (с точкой т.к. класс) повесили событие click*/
+        if (confirm('Are you sure?')) { /*если подтвердили то вызываем функцию deleteRow с параметром id из тега строки*/
             deleteRow($(this).closest('tr').attr("id"));
         }
     });
@@ -14,7 +14,7 @@ function makeEditable(datatableApi) {
     });
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
-    $.ajaxSetup({cache: false});
+    /*$.ajaxSetup({cache: false});*/
 }
 
 function add() {
@@ -24,28 +24,32 @@ function add() {
 
 function deleteRow(id) {
     $.ajax({
-        url: ctx.ajaxUrl + id,
+        url: ctx.ajaxUrl + id, /*отсылаем запрос на сервер по URL запрос DELETE*/
         type: "DELETE"
-    }).done(function () {
+    }).done(function () { /*если ответ положительный, то вызываем функцию updateTable() и подтверждающее сообщение*/
         updateTable();
         successNoty("Deleted");
     });
 }
 
+function updateTableByData(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
+}
+
 function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
+    $.get(ctx.ajaxUrl, function (data) {  /*запрос по ajax по нужному url, если данные пришли, то вызываем callback*/
         ctx.datatableApi.clear().rows.add(data).draw();
     });
 }
 
 function save() {
-    $.ajax({
-        type: "POST",
-        url: ctx.ajaxUrl,
-        data: form.serialize()
-    }).done(function () {
-        $("#editRow").modal("hide");
-        updateTable();
+    $.ajax({  //запрос по ajax
+        type: "POST", //тип запроса
+        url: ctx.ajaxUrl, //url запроса
+        data: form.serialize() //передаем сериализацию формы как параметры запроса
+    }).done(function () { //в случае успеха
+        $("#editRow").modal("hide"); //прячем диалоговое окно
+        updateTable(); //обновляем таблицу
         successNoty("Saved");
     });
 }

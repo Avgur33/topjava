@@ -1,23 +1,23 @@
-const mealsAjaxUrl = "ui/meals/";
+const mealAjaxUrl = "ui/meals/";
 
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
-    ajaxUrl: mealsAjaxUrl
+    ajaxUrl: mealAjaxUrl,
+    updateTable() {
+        $.ajax({
+            type: "GET",
+            url: mealAjaxUrl + "filter",
+            data: $("#filter").serialize()
+        }).done(function (data){
+            updateTableByData(data)
+        });
+    }
 };
-
-let ffilter;
-
-function mealFilter() {
-    $.ajax({
-        type: "GET",
-        url: ctx.ajaxUrl+"filter",
-        data: ffilter.serialize()
-    }).done(function () {
-        /*$("#editRow").modal("hide");*/
-        updateTable();
-        successNoty("Filtered");
-    });
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(mealAjaxUrl, updateTableByData);
 }
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
