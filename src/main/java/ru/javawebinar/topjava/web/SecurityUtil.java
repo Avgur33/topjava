@@ -1,4 +1,3 @@
-
 package ru.javawebinar.topjava.web;
 
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
@@ -11,14 +10,10 @@ public class SecurityUtil {
     }
 
     public static int authUserId() {
-        return AbstractBaseEntity.START_SEQ;
-    }
-
-    public static void setAuthUserId(int id) {
-        SecurityUtil.id = id;
+                return get().getUserTo().id();
     }
 
     public static int authUserCaloriesPerDay() {
-        return DEFAULT_CALORIES_PER_DAY;
+                return get().getUserTo().getCaloriesPerDay();
     }
 }
