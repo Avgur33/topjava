@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.web.user;
+package ru.javawebinar.topjava.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
