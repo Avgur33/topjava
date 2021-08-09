@@ -17,6 +17,39 @@ function clearFilter() {
     $.get(mealAjaxUrl, updateTableByData);
 }
 
+
+$.datetimepicker.setLocale(localeCode.substring(0,2));
+$.ajaxSetup({
+    converters: {
+        "text json": function( json_string ) {
+            let json = JSON.parse(json_string);
+            if (typeof json === 'object')
+                $(json).each(function () {
+                    if (this.hasOwnProperty('dateTime')) {
+                        this.dateTime = this.dateTime.substr(0, 16).replace('T', ' ');
+                    }
+                });
+            return json;
+        }
+    }
+});
+
+jQuery('#dateTime').datetimepicker({
+    format:'Y-m-d H:i'
+});
+
+
+jQuery('#startDate,#endDate').datetimepicker({
+    timepicker:false,
+    format:'Y-m-d'
+});
+
+jQuery('#startTime,#endTime').datetimepicker({
+    datepicker:false,
+    format:'H:i'
+});
+
+
 $(function () {
     makeEditable(
         $("#datatable").DataTable({
@@ -29,12 +62,12 @@ $(function () {
             "columns": [
                 {
                     "data": "dateTime",
-                    "render": function (date, type, row) {
+                    /*"render": function (date, type, row) {
                         if (type === "display") {
                             return date.replace("T", " ").substring(0, 16);
                         }
                         return date;
-                    }
+                    }*/
                 },
                 {
                     "data": "description"

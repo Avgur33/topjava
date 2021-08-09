@@ -12,3 +12,6 @@
         </form>
     </div>
 </nav>
+<script type="text/javascript">
+    let localeCode = "${pageContext.response.locale}";
+</script>
