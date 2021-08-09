@@ -48,7 +48,6 @@ public class MealUIController extends AbstractMealController {
     }*/
     public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
-            result.getFieldErrors().stream().anyMatch(f->f.equals("calories")&&(meal.getCalories()==0));
             String errorFieldsMsg = result.getFieldErrors().stream()
                     .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                     .collect(Collectors.joining("<br>"));
