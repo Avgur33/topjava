@@ -29,6 +29,7 @@ public class ProfileUIController extends AbstractUserController {
             super.update(userTo, SecurityUtil.authUserId());
             SecurityUtil.get().setTo(userTo);
             status.setComplete();
+
             return "redirect:/meals";
         }
     }
@@ -46,6 +47,11 @@ public class ProfileUIController extends AbstractUserController {
             model.addAttribute("register", true);
             return "profile";
         } else {
+            /*try {
+                super.create(userTo);
+            } catch (DataIntegrityViolationException e) {
+                System.out.println("DataIntegrityViolationException");
+            }*/
             super.create(userTo);
             status.setComplete();
             return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
