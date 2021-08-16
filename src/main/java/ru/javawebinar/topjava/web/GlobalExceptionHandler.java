@@ -14,6 +14,9 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
+    public static final String EXCEPTION_DUPLICATE_DATETIME = "Meal with this date already exists";
+
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)

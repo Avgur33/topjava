@@ -11,6 +11,10 @@
     <title><spring:message code="app.title"/></title>
     <base href="${pageContext.request.contextPath}/"/>
 
+
+    <a href='${requestScope['javax.servlet.forward.request_uri']}?lang=en'>English</a>  <!-- (1) -->
+    <a href='${requestScope['javax.servlet.forward.request_uri']}?lang=ru'>Russian</a>
+
     <link rel="stylesheet" href="resources/css/style.css?v=2">
     <link rel="stylesheet" href="webjars/bootstrap/4.6.0-1/css/bootstrap.min.css">
     <link rel="stylesheet" href="webjars/noty/3.1.4/demo/font-awesome/css/font-awesome.min.css">

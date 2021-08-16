@@ -74,7 +74,16 @@
         <constructor-arg ref="messageSource"/>
     </bean>
 
+    <!--https://terasolunaorg.github.io/guideline/5.0.x/en/ArchitectureInDetail/Internationalization.html-->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">  <!-- (1) -->
+        <property name="defaultLocale" value="en"/>  <!-- (2) -->
+    </bean>
+
     <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="lang"/>  <!-- (2) -->
+        </bean>
+
         <bean class="ru.javawebinar.topjava.web.interceptor.ModelInterceptor"/>
     </mvc:interceptors>
 </beans>

@@ -7,14 +7,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.GlobalExceptionHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -74,6 +78,23 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isUnprocessableEntity());
     }
 
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateDuplicateDate() throws Exception{
+        Meal updated = new Meal(meal1);
+        updated.setUser(user);
+        updated.setDateTime(meal2.getDateTime());
+
+        ResultActions action = perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(updated)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_DATETIME)));
+    }
+
     @Test
     void updateNonValidData() throws Exception {
         Meal updated = getUpdated();
@@ -102,10 +123,11 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void createWithLocationNonValidData() throws Exception {
+    void createNonValidData() throws Exception {
         Meal newMeal = getNew();
         newMeal.setDescription(null);
-        String content = perform(MockMvcRequestBuilders.post(REST_URL)
+        String content = perform(MockMvcRequestBuilders
+                .post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(newMeal)))
@@ -117,9 +139,27 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createDuplicateDate() throws Exception{
+        Meal newMeal = getNew();
+        newMeal.setUser(user);
+        newMeal.setDateTime(meal1.getDateTime());
+
+        ResultActions action = perform(MockMvcRequestBuilders
+                .post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(newMeal)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_DATETIME)));
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+        ResultActions action = perform(MockMvcRequestBuilders
+                .post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(newMeal)));
@@ -133,7 +173,8 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL)
+        perform(MockMvcRequestBuilders
+                .get(REST_URL)
                 .with(userHttpBasic(user)))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -143,7 +184,8 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+        perform(MockMvcRequestBuilders
+                .get(REST_URL + "filter")
                 .param("startDate", "2020-01-30").param("startTime", "07:00")
                 .param("endDate", "2020-01-31").param("endTime", "11:00")
                 .with(userHttpBasic(user)))

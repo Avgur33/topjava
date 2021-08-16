@@ -5,14 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.GlobalExceptionHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -111,6 +115,21 @@ class AdminRestControllerTest extends AbstractControllerTest {
         ErrorInfo errorInfo = JsonUtil.readValue(content, ErrorInfo.class);
         assertEquals(errorInfo.getType(), ErrorType.VALIDATION_ERROR);
     }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateDuplicateEmail() throws Exception{
+        User updated = new User(user);
+        updated.setEmail(admin.getEmail());
+        ResultActions action = perform(MockMvcRequestBuilders.put(REST_URL+USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(updated, "newPass")))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_EMAIL)));
+    }
+
     @Test
     void createWithLocation() throws Exception {
         User newUser = getNew();
@@ -128,7 +147,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void createWithLocationNonValidData() throws Exception {
+    void createNonValidData() throws Exception {
         User newUser = getNew();
         newUser.setEmail(null);
         String content = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -141,6 +160,21 @@ class AdminRestControllerTest extends AbstractControllerTest {
         ErrorInfo errorInfo = JsonUtil.readValue(content, ErrorInfo.class);
         assertEquals(errorInfo.getType(), ErrorType.VALIDATION_ERROR);
     }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createDuplicateEmail() throws Exception{
+        User newUser = getNew();
+        newUser.setEmail(user.getEmail());
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(newUser, "newPass")))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString(GlobalExceptionHandler.EXCEPTION_DUPLICATE_EMAIL)));
+    }
+
 
     @Test
     void getAll() throws Exception {
